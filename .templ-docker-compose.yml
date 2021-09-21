@@ -1,0 +1,19 @@
+version: "3.2"
+
+services:
+    corryvreckan:
+        build: 
+            context: .
+            dockerfile: Dockerfile
+        image: duartej/corryvreckan:latest
+
+    analysis: 
+        image: duartej/corryvreckan:latest
+        volumes: 
+            - /tmp/.X11-unix:/tmp/.X11-unix
+            - type: bind
+              source: @ANADIR
+              target: /data
+        environment:
+            - DISPLAY=unix${DISPLAY}
+    

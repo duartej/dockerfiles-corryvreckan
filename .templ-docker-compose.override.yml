@@ -1,0 +1,14 @@
+version: "3.2"
+
+services:
+    devcode:
+        volumes: 
+            - /tmp/.X11-unix:/tmp/.X11-unix
+            - type: bind
+              source: @CODEDIR_CORRY
+              target: /analysis/corryvreckan
+            - type: bind
+              source: @ANADIR
+              target: /data
+        environment:
+            - DISPLAY=unix${DISPLAY}
