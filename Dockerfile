@@ -66,7 +66,7 @@ ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/analysis/corryvreckan/lib:/analysis/eud
 
 # The software 
 RUN cd /analysis \
-    && git clone https://gitlab.cern.ch/corryvreckan/corryvreckan.git \
+    && git clone -b docker-prov --single-branch https://gitlab.cern.ch/duarte/corryvreckan.git \
     && mkdir -p /analysis/corryvreckan/build \
     && cd /analysis/corryvreckan/build \
     && cmake -DBUILD_EventLoaderEUDAQ=ON \
