@@ -1,6 +1,6 @@
 FROM phusion/baseimage:focal-1.1.0
 LABEL author="jorge.duarte.campderros@cern.ch" \ 
-    version="v0.1" \ 
+    version="v0.2" \ 
     description="Docker image to run the CORRYVRECKAN framework \
     with EUDAQ"
 MAINTAINER Jordi Duarte-Campderros jorge.duarte.campderros@cern.ch
@@ -59,13 +59,13 @@ RUN useradd -md /home/analyser -ms /bin/bash -G sudo analyser \
 # Change to user
 USER analyser
 ENV HOME="/home/analyser"
-ENV PATH="${PATH}:${HOME}/.local/bin:/analysis/corryvreckan/bin:/analysis/eudaq/bin"
+ENV PATH="${PATH}:${HOME}/.local/bin:/analysis/corryvreckan/bin:/analysis/eudaq/bin:/rootfr/root/bin"
 ENV PYTHONPATH="${HOME}/.local/lib:${PYTHONPATH}"
 ENV EUDAQPATH="/analysis/eudaq"
 ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/analysis/corryvreckan/lib:/analysis/eudaq/lib:/analysis/boost/lib"
 
 # The software 
-RUN cd /analysis \
+RUN cd /analysis \ 
     && git clone -b docker-prov --single-branch https://gitlab.cern.ch/duarte/corryvreckan.git \
     && mkdir -p /analysis/corryvreckan/build \
     && cd /analysis/corryvreckan/build \
