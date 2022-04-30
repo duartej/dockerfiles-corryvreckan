@@ -1,8 +1,8 @@
 FROM phusion/baseimage:focal-1.1.0
 LABEL author="jorge.duarte.campderros@cern.ch" \ 
-    version="v0.2" \ 
+    version="v1.0" \ 
     description="Docker image to run the CORRYVRECKAN framework \
-    with EUDAQ"
+    with EUDAQ2"
 MAINTAINER Jordi Duarte-Campderros jorge.duarte.campderros@cern.ch
 
 # Use baseimage-docker's init system.
@@ -34,6 +34,9 @@ RUN apt-get update \
    libtiff5 \ 
    libtbb-dev \ 
    sudo \ 
+   # Ipbus dependencies... maybe install it directly in eudaqv2
+   erlang \
+   libpugixml-dev \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Extract eudaq and boost from eudaq image: PROV (ph2_acf)
@@ -59,17 +62,17 @@ RUN useradd -md /home/analyser -ms /bin/bash -G sudo analyser \
 # Change to user
 USER analyser
 ENV HOME="/home/analyser"
-ENV PATH="${PATH}:${HOME}/.local/bin:/analysis/corryvreckan/bin:/analysis/eudaq/bin:/rootfr/root/bin"
+ENV PATH="${PATH}:${HOME}/.local/bin:/analysis/corryvreckan/bin:/analysis/eudaq/bin:/rootfr/root/bin:/analysis/cactus/bin"
 ENV PYTHONPATH="${HOME}/.local/lib:${PYTHONPATH}"
 ENV EUDAQPATH="/analysis/eudaq"
-ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/analysis/corryvreckan/lib:/analysis/eudaq/lib:/analysis/boost/lib"
+ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/analysis/corryvreckan/lib:/analysis/eudaq/lib:/analysis/boost/lib:/analysis/ipbus-software/uhal/uhal/lib:/analysis/cactus/lib"
 
 # The software 
 RUN cd /analysis \ 
     && git clone -b docker-prov --single-branch https://gitlab.cern.ch/duarte/corryvreckan.git \
     && mkdir -p /analysis/corryvreckan/build \
     && cd /analysis/corryvreckan/build \
-    && cmake -DBUILD_EventLoaderEUDAQ=ON \
+    && cmake -DBUILD_EventLoaderEUDAQ2=ON \
            -DROOT_DIR="/rootfr/root/cmake" \
            -DCMAKE_INSTALL_PREFIX=../ \
            -DCMAKE_MODULE_PATH="/usr/share/cmake/Modules/;/usr/share/cmake/Modules/" \
