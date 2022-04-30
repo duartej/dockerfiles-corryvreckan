@@ -40,9 +40,11 @@ RUN apt-get update \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Extract eudaq and boost from eudaq image: PROV (ph2_acf)
-COPY --from=duartej/eudaqv1:ph2_acf /eudaq/eudaq /analysis/eudaq
-COPY --from=duartej/eudaqv1:ph2_acf /eudaq/boost /analysis/boost
-COPY --from=duartej/eudaqv1:ph2_acf /rootfr/root /rootfr/root
+COPY --from=gitlab-registry.cern.ch/duarte/dockerfiles-eudaqv2/eudaq2:cms_trk_ph2 /eudaq/eudaq /analysis/eudaq
+COPY --from=gitlab-registry.cern.ch/duarte/dockerfiles-eudaqv2/eudaq2:cms_trk_ph2 /eudaq/boost /analysis/boost
+COPY --from=gitlab-registry.cern.ch/duarte/dockerfiles-eudaqv2/eudaq2:cms_trk_ph2 /eudaq/ipbus-software /analysis/ipbus-software
+COPY --from=gitlab-registry.cern.ch/duarte/dockerfiles-eudaqv2/eudaq2:cms_trk_ph2 /opt/cactus/ /analysis/cactus
+COPY --from=gitlab-registry.cern.ch/duarte/dockerfiles-eudaqv2/eudaq2:cms_trk_ph2 /rootfr/root /rootfr/root
 
 ENV ROOTSYS /rootfr/root
 # BE aware of the ROOT libraries
