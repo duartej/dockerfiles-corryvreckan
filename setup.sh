@@ -11,15 +11,15 @@
 function print_usage
 {
     echo
-    echo "Creates `docker-compose.yml|docker-compose.override.yml` files"
+    echo "Creates 'docker-compose.yml|docker-compose.override.yml' files"
     echo "with some useful services."
     echo "Mandatory argument:"
     echo " <ANALYSIS_DIR>: the host analysis folder which corresponds"
-    echo "                 to the `/data` folder in the container"
+    echo "                 to the '/data' folder in the container"
     echo "Optional argument:"
     echo " [CORRY_DIR]: the host corryvreckan repository folder"
     echo " If no [CORRY_DIR] is given, the corryvreckan source code "
-    echo " will be downloaded at `${HOME}/repos/corryvreckan`"
+    echo " will be downloaded at '${HOME}/repos/corryvreckan'"
     echo 
     echo "Usage:"
     echo "source setup.sh <ANALYSIS_DIR> [CORRY_DIR]"
@@ -58,6 +58,7 @@ then
 fi
 
 DOCKERDIR=${PWD}
+echo $DOCKERDIR
 ### 4. Download the code if needed:
 if [ "X" == "X${CORRY_REPO}" ];
 then
@@ -74,22 +75,20 @@ then
         git clone https://gitlab.cern.ch/corryvreckan/corryvreckan.git corryvreckan
         echo "[WARNING] Corryvreckan in `master` branch"
     fi
-else if [ ! -d ${CORRY_REPO} ];
+elif [ ! -d ${CORRY_REPO} ];
 then
     echo "Directory not found: ${CORRY_REPO}"
     return -5
-fi
-    
+fi    
 
 # 3. Fill the place-holders of the .templ-docker-compose.yml 
-cd ${DOCKERDIR}
 # -- copying relevant files
 for dc in .templ-docker-compose.yml .templ-docker-compose.override.yml;
 do
     finalf=$(echo ${dc}|sed "s/.templ-//g")
     cp $dc $finalf
     sed -i "s#@CODEDIR_CORRY#${CORRY_REPO}#g" $finalf
-    sed -i "s#@ANADIR#${}#g" ${ANADIR}
+    sed -i "s#@ANADIR#${ANADIR}#g" $finalf
 done
 
 # 4. Create a .setupdone file with some info about the
