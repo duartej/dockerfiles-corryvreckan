@@ -1,8 +1,8 @@
-FROM phusion/baseimage:focal-1.1.0
+FROM phusion/baseimage:focal-1.2.0
 LABEL author="jorge.duarte.campderros@cern.ch" \ 
-    version="v1.0" \ 
+    version="2.0" \ 
     description="Docker image to run the CORRYVRECKAN framework \
-    with EUDAQ2"
+    with EUDAQ and with C++17 support"
 MAINTAINER Jordi Duarte-Campderros jorge.duarte.campderros@cern.ch
 
 # Use baseimage-docker's init system.
@@ -34,17 +34,12 @@ RUN apt-get update \
    libtiff5 \ 
    libtbb-dev \ 
    sudo \ 
-   # Ipbus dependencies... maybe install it directly in eudaqv2
-   erlang \
-   libpugixml-dev \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Extract eudaq and boost from eudaq image: PROV (ph2_acf)
-COPY --from=gitlab-registry.cern.ch/duarte/dockerfiles-eudaqv2/eudaq2:cms_trk_ph2 /eudaq/eudaq /analysis/eudaq
-COPY --from=gitlab-registry.cern.ch/duarte/dockerfiles-eudaqv2/eudaq2:cms_trk_ph2 /eudaq/boost /analysis/boost
-COPY --from=gitlab-registry.cern.ch/duarte/dockerfiles-eudaqv2/eudaq2:cms_trk_ph2 /eudaq/ipbus-software /analysis/ipbus-software
-COPY --from=gitlab-registry.cern.ch/duarte/dockerfiles-eudaqv2/eudaq2:cms_trk_ph2 /opt/cactus/ /analysis/cactus
-COPY --from=gitlab-registry.cern.ch/duarte/dockerfiles-eudaqv2/eudaq2:cms_trk_ph2 /rootfr/root /rootfr/root
+COPY --from=gitlab-registry.cern.ch/duarte/dockerfiles-eudaqv2/eudaq2:master /eudaq/eudaq /analysis/eudaq
+COPY --from=gitlab-registry.cern.ch/duarte/dockerfiles-eudaqv2/eudaq2:master /eudaq/boost /analysis/boost
+COPY --from=gitlab-registry.cern.ch/duarte/dockerfiles-eudaqv2/eudaq2:master /rootfr/root /rootfr/root
 
 ENV ROOTSYS /rootfr/root
 # BE aware of the ROOT libraries
@@ -67,10 +62,10 @@ ENV HOME="/home/analyser"
 ENV PATH="${PATH}:${HOME}/.local/bin:/analysis/corryvreckan/bin:/analysis/eudaq/bin:/rootfr/root/bin:/analysis/cactus/bin"
 ENV PYTHONPATH="${HOME}/.local/lib:${PYTHONPATH}"
 ENV EUDAQPATH="/analysis/eudaq"
-ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/analysis/corryvreckan/lib:/analysis/eudaq/lib:/analysis/boost/lib:/analysis/ipbus-software/uhal/uhal/lib:/analysis/cactus/lib"
+ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/analysis/corryvreckan/lib:/analysis/eudaq/lib:/analysis/boost/lib"
 
 # The software 
-RUN cd /analysis \ 
+RUN cd /analysis \
     && git clone -b docker-prov --single-branch https://gitlab.cern.ch/duarte/corryvreckan.git \
     && mkdir -p /analysis/corryvreckan/build \
     && cd /analysis/corryvreckan/build \
