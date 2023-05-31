@@ -1,8 +1,8 @@
-FROM phusion/baseimage:focal-1.1.0
+FROM phusion/baseimage:focal-1.2.0
 LABEL author="jorge.duarte.campderros@cern.ch" \ 
-    version="v0.1" \ 
+    version="2.0" \ 
     description="Docker image to run the CORRYVRECKAN framework \
-    with EUDAQ"
+    with EUDAQ and with C++17 support"
 MAINTAINER Jordi Duarte-Campderros jorge.duarte.campderros@cern.ch
 
 # Use baseimage-docker's init system.
@@ -37,9 +37,9 @@ RUN apt-get update \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Extract eudaq and boost from eudaq image: PROV (ph2_acf)
-COPY --from=duartej/eudaqv1:ph2_acf /eudaq/eudaq /analysis/eudaq
-COPY --from=duartej/eudaqv1:ph2_acf /eudaq/boost /analysis/boost
-COPY --from=duartej/eudaqv1:ph2_acf /rootfr/root /rootfr/root
+COPY --from=gitlab-registry.cern.ch/duarte/dockerfiles-eudaqv2/eudaq2:master /eudaq/eudaq /analysis/eudaq
+COPY --from=gitlab-registry.cern.ch/duarte/dockerfiles-eudaqv2/eudaq2:master /eudaq/boost /analysis/boost
+COPY --from=gitlab-registry.cern.ch/duarte/dockerfiles-eudaqv2/eudaq2:master /rootfr/root /rootfr/root
 
 ENV ROOTSYS /rootfr/root
 # BE aware of the ROOT libraries
@@ -59,7 +59,7 @@ RUN useradd -md /home/analyser -ms /bin/bash -G sudo analyser \
 # Change to user
 USER analyser
 ENV HOME="/home/analyser"
-ENV PATH="${PATH}:${HOME}/.local/bin:/analysis/corryvreckan/bin:/analysis/eudaq/bin"
+ENV PATH="${PATH}:${HOME}/.local/bin:/analysis/corryvreckan/bin:/analysis/eudaq/bin:/rootfr/root/bin:/analysis/cactus/bin"
 ENV PYTHONPATH="${HOME}/.local/lib:${PYTHONPATH}"
 ENV EUDAQPATH="/analysis/eudaq"
 ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/analysis/corryvreckan/lib:/analysis/eudaq/lib:/analysis/boost/lib"
@@ -69,7 +69,7 @@ RUN cd /analysis \
     && git clone -b docker-prov --single-branch https://gitlab.cern.ch/duarte/corryvreckan.git \
     && mkdir -p /analysis/corryvreckan/build \
     && cd /analysis/corryvreckan/build \
-    && cmake -DBUILD_EventLoaderEUDAQ=ON \
+    && cmake -DBUILD_EventLoaderEUDAQ2=ON \
            -DROOT_DIR="/rootfr/root/cmake" \
            -DCMAKE_INSTALL_PREFIX=../ \
            -DCMAKE_MODULE_PATH="/usr/share/cmake/Modules/;/usr/share/cmake/Modules/" \
