@@ -1,7 +1,7 @@
 # CORRYVRECKAN-EUDAQ integration dockerfile
 
 Creates the environment to run the [CORRYVRECKAN](https://gitlab.cern.ch/corryvreckan/corryvreckan)
-analysis framework with the EUDAQ (v1) event reader support. 
+analysis framework with the EUDAQ (v2) event reader support. 
 
 ## Image download and installation
 1. Clone the docker eudaq repository and configure it
@@ -14,8 +14,8 @@ The ```setup.sh``` creates a ```docker-compose.yml``` and
 ```docker-compose.override.yml``` files which they can be used with the
 [docker-compose](https://docs.docker.com/compose) utility. Those files
 will provide several useful services, including the service to build the 
-image. The `ANALYSIS\_DIR` is referring to a folder in the host shared 
-with the container, and `CORRY\_REPO` to the local repository of `corryvreckan`.
+image. The `ANALYSIS_DIR` is referring to a folder in the host shared 
+with the container, and `CORRY_REPO` to the local repository of `corryvreckan`.
 If not is provided, the script will try to clone it from the remote repository
 in the host ```$HOME/repos/corryvreckan``` folder.
 
@@ -57,8 +57,8 @@ $ docker run -it --rm -v /tmp/.X11-unix:/tmp/.X11-unix --mount type=bind,source=
 
 ## Content
 The image is built over a [phusion](https://github.com/phusion/baseimage-docker) image, which
-is based on Ubuntu focal (20.1.0). It uses the [duartej/eudaqv1](https://github.com/duartej/dockerfiles-eudaqv1)
-to extract eudaq (and its dependency boost-1.77) and ROOT 6.24. 
+is based on Ubuntu focal (20.1.1). It uses the [duartej/eudaqv1](https://github.com/duartej/dockerfiles-eudaqv1)
+to extract eudaq (and its dependency boost-1.77) and ROOT 6.28. 
 
  * `/rootfr/root`: ROOT 6.24 libraries and source code
  * `/analysis/eudaq`: EUDAQ libraries and source code
