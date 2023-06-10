@@ -18,13 +18,14 @@ RUN apt-get update \
   && install_clean --no-install-recommends \ 
    build-essential \
    libeigen3-dev \
-   qt5-default \ 
-   git \ 
-   cmake \ 
-   libusb-dev \ 
-   libusb-1.0 \ 
-   pkgconf \ 
-   vim \ 
+   libpugixml1v5 \
+   qt5-default \
+   git \
+   cmake \
+   libusb-dev \
+   libusb-1.0 \
+   pkgconf \
+   vim \
    g++ \
    gcc \
    gfortran \
@@ -39,6 +40,7 @@ RUN apt-get update \
 # Extract eudaq and boost from eudaq image: PROV (ph2_acf)
 COPY --from=gitlab-registry.cern.ch/duarte/dockerfiles-eudaqv2/eudaq2:master /eudaq/eudaq /analysis/eudaq
 COPY --from=gitlab-registry.cern.ch/duarte/dockerfiles-eudaqv2/eudaq2:master /eudaq/boost /analysis/boost
+COPY --from=gitlab-registry.cern.ch/duarte/dockerfiles-eudaqv2/eudaq2:master /opt/cactus /analysis/cactus
 COPY --from=gitlab-registry.cern.ch/duarte/dockerfiles-eudaqv2/eudaq2:master /rootfr/root /rootfr/root
 
 ENV ROOTSYS /rootfr/root
@@ -51,6 +53,8 @@ ENV PYTHONPATH /rootfr/root/lib
 RUN useradd -md /home/analyser -ms /bin/bash -G sudo analyser \ 
   && echo "analyser:docker" | chpasswd \
   && echo "analyser ALL=(ALL) NOPASSWD: ALL\n" >> /etc/sudoers \
+  # Create a soft link for eudaq compatibilty
+  && ln -s /analysis /eudaq \
   # Recovering permissions
   && mkdir -p /data \
   && chown -R analyser:analyser /data \
@@ -62,7 +66,7 @@ ENV HOME="/home/analyser"
 ENV PATH="${PATH}:${HOME}/.local/bin:/analysis/corryvreckan/bin:/analysis/eudaq/bin:/rootfr/root/bin:/analysis/cactus/bin"
 ENV PYTHONPATH="${HOME}/.local/lib:${PYTHONPATH}"
 ENV EUDAQPATH="/analysis/eudaq"
-ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/analysis/corryvreckan/lib:/analysis/eudaq/lib:/analysis/boost/lib"
+ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/analysis/corryvreckan/lib:/analysis/eudaq/lib:/analysis/boost/lib:/analysis/cactus/lib"
 
 # The software 
 RUN cd /analysis \
