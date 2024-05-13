@@ -1,6 +1,6 @@
-FROM phusion/baseimage:focal-1.2.0
+FROM phusion/baseimage:jammy-1.0.2
 LABEL author="jorge.duarte.campderros@cern.ch" \ 
-    version="2.0" \ 
+    version="3.0" \ 
     description="Docker image to run the CORRYVRECKAN framework \
     with EUDAQ and with C++17 support"
 MAINTAINER Jordi Duarte-Campderros jorge.duarte.campderros@cern.ch
