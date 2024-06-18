@@ -19,7 +19,8 @@ RUN apt-get update \
    build-essential \
    libeigen3-dev \
    libpugixml1v5 \
-   qt5-default \
+   qtbase5-dev \
+   qt5-qmake \
    git \
    cmake \
    libusb-dev \
