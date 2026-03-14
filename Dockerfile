@@ -62,6 +62,8 @@ RUN cd /eudaq \
     && git clone -b docker-prov --single-branch https://gitlab.cern.ch/duarte/corryvreckan.git \
     && cp CMakeLists.txt /eudaq/corryvreckan/ \
     && mkdir -p /eudaq/corryvreckan/build \
+    && cd /eudaq/corryvreckan/build \ 
+    && cmake -DBUILD_EventLoaderEUDAQ2=ON \
            -DROOT_DIR="/eudaq/root/cmake" \
            -DCMAKE_INSTALL_PREFIX=../ \
            -DCMAKE_MODULE_PATH="/usr/share/cmake/Modules/;/usr/share/cmake/Modules/" \
