@@ -1,7 +1,9 @@
 # CORRYVRECKAN-EUDAQ integration dockerfile
 
 Creates the environment to run the [CORRYVRECKAN](https://gitlab.cern.ch/corryvreckan/corryvreckan)
-analysis framework with the EUDAQ (v1) event reader support. 
+analysis framework with the EUDAQ (v2) event reader support. 
+
+[FIXME: THIS README NEEDS TO BE UPDATED]
 
 ## Image download and installation
 1. Clone the docker eudaq repository and configure it
