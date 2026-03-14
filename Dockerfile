@@ -8,7 +8,7 @@ ENV LANG=C.UTF-8
 USER 0
 
 # Place at the directory
-WORKDIR /analysis
+WORKDIR /eudaq
 
 # XXX -- Are all those packages needed?
 # Install dependencies
@@ -33,54 +33,42 @@ RUN apt-get update && apt-get -y install \
    sudo \ 
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Extract eudaq and boost from eudaq image: PROV (ph2_acf)
-COPY --from=gitlab-registry.cern.ch/duarte/dockerfiles-eudaqv2/eudaq2:caen-raw-events /eudaq/eudaq /analysis/eudaq
-COPY --from=gitlab-registry.cern.ch/duarte/dockerfiles-eudaqv2/eudaq2:caen-raw-events /eudaq/boost /analysis/boost
-COPY --from=gitlab-registry.cern.ch/duarte/dockerfiles-eudaqv2/eudaq2:caen-raw-events /eudaq/root  /rootfr/root
-
 # The c++ standard
 ARG CMAKE_CXX_STANDARD=20
 ARG CXXFLAGS="-std=c++20"
 
 COPY CMakeLists.txt CMakeLists.txt
 
-ENV ROOTSYS=/rootfr/root
+ENV ROOTSYS=/eudaq/root
 # BE aware of the ROOT libraries
-ENV LD_LIBRARY_PATH=/rootfr/root/lib
-ENV PYTHONPATH=/rootfr/root/lib
+ENV LD_LIBRARY_PATH=/eudaq/root/lib
+ENV PYTHONPATH=/eudaq/root/lib
 
 # Add analyis user, allow to call sudo without password
 # And give previously created folders ownership to the user
-RUN useradd -md /home/analyser -ms /bin/bash -G sudo analyser \ 
-  && echo "analyser:docker" | chpasswd \
-  && echo "analyser ALL=(ALL) NOPASSWD: ALL\n" >> /etc/sudoers \
-  # Recovering permissions
-  && mkdir -p /data \
-  && chown -R analyser:analyser /data \
-  && chown -R analyser:analyser /analysis
+RUN mkdir -p /data \
+  && chown -R eudaquser:eudaquser /data
 
 # Change to user
-USER analyser
-ENV HOME="/home/analyser"
-ENV PATH="${PATH}:${HOME}/.local/bin:/analysis/corryvreckan/bin:/analysis/eudaq/bin:/rootfr/root/bin:/analysis/cactus/bin"
+USER eudaquser
+ENV HOME="/home/eudaquser"
+ENV PATH="${PATH}:${HOME}/.local/bin:/eudaq/corryvreckan/bin:/eudaq/eudaq/bin:/eudaq/root/bin:/eudaq/cactus/bin"
 ENV PYTHONPATH="${HOME}/.local/lib:${PYTHONPATH}"
-ENV EUDAQPATH="/analysis/eudaq"
-ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/analysis/corryvreckan/lib:/analysis/eudaq/lib:/analysis/boost/lib"
+ENV EUDAQPATH="/eudaq/eudaq"
+ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/eudaq/corryvreckan/lib:/eudaq/eudaq/lib:/eudaq/boost/lib:/eudaq/cactus/lib"
 
 # The software 
-RUN cd /analysis \
+RUN cd /eudaq \
     && git clone -b docker-prov --single-branch https://gitlab.cern.ch/duarte/corryvreckan.git \
-    && cp CMakeLists.txt /analysis/corryvreckan/ \
-    && mkdir -p /analysis/corryvreckan/build \
-    && cd /analysis/corryvreckan/build \
-    && cmake -DBUILD_EventLoaderEUDAQ2=ON \
-           -DROOT_DIR="/rootfr/root/cmake" \
+    && cp CMakeLists.txt /eudaq/corryvreckan/ \
+    && mkdir -p /eudaq/corryvreckan/build \
+           -DROOT_DIR="/eudaq/root/cmake" \
            -DCMAKE_INSTALL_PREFIX=../ \
            -DCMAKE_MODULE_PATH="/usr/share/cmake/Modules/;/usr/share/cmake/Modules/" \
           .. \
     && make -j`grep -c processor /proc/cpuinfo` \
     && make install \
-    && rm -rf /analysis/corryvreckan/build
+    && rm -rf /eudaq/corryvreckan/build
 
 # Default command for starting the container, executed after the ENTRYPOINT
 CMD ["bash"]
